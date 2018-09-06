@@ -1,48 +1,25 @@
-import-module au
+. "$PSScriptRoot\..\7zip\update.ps1"
+Import-Module "$PSScriptRoot\..\..\scripts\au_extensions.psm1"
 
-$domain   = 'http://www.7-zip.org/'
-$releases = "${domain}download.html"
+$softwareNamePrefix = '7-zip'
+
+function global:au_BeforeUpdate { Get-RemoteFiles -Purge -FileNameBase '7zip' }
+
+function global:au_AfterUpdate {
+  Update-ChangelogVersion -Version $Latest.Version
+}
 
 function global:au_SearchReplace {
   @{
-    "$($Latest.PackageName).nuspec" = @{
-      "(\<dependency .+?`"$($Latest.PackageName).install`" version=)`"([^`"]+)`"" = "`$1`"[$($Latest.Version)]`""
+    ".\legal\verification.txt" = @{
+      "(?i)(listed on\s*)\<.*\>" = "`${1}<$releases>"
+      "(?i)(32-Bit.+)\<.*\>" = "`${1}<$($Latest.URL32)>"
+      "(?i)(64-Bit.+)\<.*\>" = "`${1}<$($Latest.URL64)>"
+      "(?i)(checksum type:).*" = "`${1} $($Latest.ChecksumType)"
+      "(?i)(checksum32:).*" = "`${1} $($Latest.Checksum32)"
+      "(?i)(checksum64:).*" = "`${1} $($Latest.Checksum64)"
     }
   }
 }
 
-function global:au_GetLatest {
-  $download_page = Invoke-WebRequest $releases
-
-  $streams = @{}
-
-  $download_page.AllElements | ? innerText -match "^Download 7\-Zip ([\d\.]+) ?(alpha|beta|rc)? \([\d]{4}[\-\d]+\)" | % {
-    if ($Matches[1] -and $Matches[2]) {
-      $streamName = "pre"
-      $version = "$($Matches[1])"
-      $versionFull = "$version-$($Matches[2])"
-    } elseif ($Matches[1]) {
-      $streamName = "stable"
-      $version = $Matches[1]
-      $versionFull = $version
-    } else {
-      return
-    }
-    if ($streams.ContainsKey($streamName)) { return }
-
-    $URLS = $download_page.links | ? href -match "7z$($version -replace '\.','')" | select -expand href
-
-    $streams["$streamName"] = @{
-      URL32 = $domain + ($URLS | ? { $_ -notmatch "x64" } | select -first 1)
-      URL64 = $domain + ($URLS | ? { $_ -match "x64" } | select -first 1)
-      URL_EXTRA = $domain + ($URLS | ? { $_ -match "extra" } | select -first 1)
-      Version = (Get-Version $versionFull).ToString()
-    }
-  }
-
-  return @{ Streams = $streams }
-}
-
-if ($MyInvocation.InvocationName -ne '.') {
-  update -ChecksumFor none
-}
+update -ChecksumFor none
