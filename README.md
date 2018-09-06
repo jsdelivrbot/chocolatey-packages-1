@@ -1,90 +1,95 @@
-Like my [packages](https://chocolatey.org/profiles/AdmiringWorm)?  Find them useful?
+# Chocolatey Packages
 
-**Want to buy me a beer?**
+~~~
+<!-- EDIT ME-->
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/AdmiringWorm)
+[![](https://ci.appveyor.com/api/projects/status/github/YOUR_GITHUB_USERNAME_HERE/chocolatey-packages?svg=true)](https://ci.appveyor.com/project/YOUR_GITHUB_USERNAME_HERE/chocolatey-packages)
+[Update status](https://gist.github.com/YOUR_GITHUB_USERNAME_HERE/YOUR_GIST_ID)
 
-# Automatic Chocolatey Packages built by appveyor
+<!-- REMOVE THE squiggles "~" surrounding this (this should not be a code block) -->
+~~~
 
-[![Join the chat at https://gitter.im/wormie-packages/Lobby](https://badges.gitter.im/wormie-packages/Lobby.svg)](https://gitter.im/wormie-packages/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![](https://ci.appveyor.com/api/projects/status/github/AdmiringWorm/chocolatey-packages?svg=true)](https://ci.appveyor.com/project/AdmiringWorm/chocolatey-packages)
-[![Update Status](https://img.shields.io/badge/Update-Status-blue.svg)](https://gist.github.com/AdmiringWorm/747b3ede98c9404e5cb6a399595e7ad1)
-[![chocolatey/AdmiringWorm](https://img.shields.io/badge/Chocolatey-AdmiringWorm-yellowgreen.svg)](https://chocolatey.org/profiles/AdmiringWorm)
-[![Open Source Helpers](https://www.codetriage.com/admiringworm/chocolatey-packages/badges/users.svg)](https://www.codetriage.com/admiringworm/chocolatey-packages)
+## Chocolatey Packages Template
 
-If you have any issues with one of the packages hosted in this repository, please feel free to open an issue (preferred instead of using `Contact Maintainers` on chocolatey.org), or jump into my [gitter channel](https://gitter.im/wormie-packages/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge).
+This contains Chocolatey packages, both manually and automatically maintained.
 
-This repository contains [chocolatey automatic packages](https://chocolatey.org/docs/automatic-packages).
-The repository is setup so that you can manage your packages entirely from the GitHub web interface (using AppVeyor to update and push packages) and/or using the local repository copy.
+You can choose to use one or both of the different methods currently supported in the Chocolatey community for automatic packaging. They are AU (Automatic Updater) and Ketarin/ChocolateyPackageUpdater.
 
-## Prerequisites
+### Folder Structure
 
-To run locally you will need:
+* automatic - where automatic packaging and packages are kept. These are packages that are automatically maintained using either [AU](https://chocolatey.org/packages/au) or [Ketarin](https://chocolatey.org/packages/ketarin)/[ChocolateyPackageUpdater](https://chocolatey.org/packages/chocolateypackageupdater) combo.
+* icons - Where you keep icon files for the packages. This is done to reduce issues when packages themselves move around.
+* ketarin - where ketarin jobs (aka applications or searches) exported as XML are kept. This is done to allow ease of contribution.
+* manual - where packages that are not automatic are kept.
+* ops - scripts, jobs, and other items for ensuring automatic packaging.
+* setup - items for prepping the system to ensure for auto packaging.
 
-- Powershell 5+: `cinst powershell`.
-- [Chocolatey Automatic Package Updater Module](https://github.com/majkinetor/au): `Install-Module au` or `cinst au`.
-- [Wormies Automatic Updater Helpers](https://github.com/WormieCorp/Wormies-AU-Helpers): `Install-Module wormies-au-helpers` or `cinst wormies-au-helpers`.
+For setting up your own automatic package repository, please see [Automatic Packaging](https://chocolatey.org/docs/automatic-packages)
 
-## Create a package
+### Requirements
 
-To create a new package see [Creating the package updater script](https://github.com/majkinetor/au#creating-the-package-updater-script).
+* Chocolatey (choco.exe)
 
-## Testing the package
+#### Ketarin / ChocolateyPackageUpdater
 
-In a package directory run: `Test-Package`. This function can be used to start testing in [chocolatey-test-environment](https://github.com/majkinetor/chocolatey-test-environment) via `Vagrant` parameter or it can test packages locally.
+* PowerShell v2+
+* [Ketarin](https://chocolatey.org/packages/ketarin)
+* [Chocolatey Package Updater](https://chocolatey.org/packages/chocolateypackageupdater)
+* A Windows box somewhere - to run the updater on - appveyor can't work until the import of the settings can be automated
+
+#### AU
+
+* PowerShell v5+.
+* The [AU module](https://chocolatey.org/packages/au).
+
+For daily operations check out the AU packages [template README](https://github.com/majkinetor/au-packages-template/blob/master/README.md).
+
+### Getting started
+
+1. Fork this repository and rename it to `chocolatey-packages` (on GitHub - go into Settings, Repository name and rename).
+1. Clone the repository locally.
+1. Head into the `setup` folder and perform the proper steps for your choice of setup (or both if you plan to use both methods).
+1. Edit this README. Update the badges at the top.
 
 
-## Automatic package update
+### Recommendation on Auto Packaging
 
-### Single package
+AU provides more in the process of being completely automated, sending emails when things go wrong, and providing a nice report at the end. It doesn't have a bolt-on feeling to it that you see with Ketarin / ChocolateyPackageUdater, however the one thing it does lack in comparison is no visual feedback to seeing how searches for installers may be found. Other than that, it provides errors when things go wrong, where Ketarin doesn't consider anything that happens during "before run"/"post run updates" (where chocopkgup and checksumming occur) to be an error, even if those scripts error.
 
-Run from within the directory of the package to update that package:
+So for best visibility, enjoying the ease of using AppVeyor, and for a nice report of results, we recommend AU over Ketarin. You also don't need to deal with templates as AU works directly with the xml/ps1 files to do replacement.
 
-    cd <package_dir>
-    ./update.ps1
+### Adapting your current source repository to this source repository template
 
-If this script is missing, the package is not automatic.
-Set `$au_Force = $true` prior to script call to update the package even if no new version is found.
+You want to bring in all of your packages into the proper folders. We suggest using some sort of diffing tool to look at the differences between your current solution and this solution and then making adjustments to it. Pay special attention to the setup folder.
 
-### Multiple packages
+1. Bring over the following files to your package source repository:
+ * `automatic\README.md`
+ * `icons\README.md`
+ * `ketarin\README.md`
+ * `ketarin\_KetarinChocolateyTemplate.xml`
+ * `manual\README.md`
+ * `ops\*.*`
+ * `setup\*.*`
+ * `.appveyor.yml`
+1. Inspect the following file and add the differences:
+ * `.gitignore`
 
-To update all packages run `./update_all.ps1`. It accepts few options:
+### Use Both Methodologies
 
-```powershell
-./update_all.ps1 -Name a*                         # Update all packages which name start with letter 'a'
-./update_all.ps1 -ForcedPackages 'cpu-z copyq'    # Update all packages and force cpu-z and copyq
-./update_all.ps1 -ForcedPackages 'copyq:1.2.3'    # Update all packages but force copyq with explicit version
-./update_all.ps1 -Root 'c:\packages'              # Update all packages in the c:\packages folder
-```
+The way this source repository is designed, you can use both AU and Ketarin/ChocolateyPackageUpdater together. This is especially helpful when migrating existing packages from one methodology to the other.
 
-The following global variables influence the execution of `update_all.ps1` script if set prior to the call:
+### Migrating existing Ketarin packages to AU
 
-```powershell
-$au_NoPlugins = $true        #Do not execute plugins
-$au_Push      = $false       #Do not push to chocolatey
-```
+1. Add an update.ps1 to the package folder and determine how to update the package using [AU's instructions](https://github.com/majkinetor/au#creating-the-package-updater-script).
+1. Remove the ketarin.xml file from the ketarin folder.
+1. Ensure you also remove the package job from Ketarin itself as it doesn't automatically remove.
 
-You can also call AU method `Update-AUPackages` (alias `updateall`) on its own in the repository root. This will just run the updater for the each package without any other option from `update_all.ps1` script. For example to force update of all packages with a single command execute:
+### Special Notes
 
-    updateall -Options ([ordered]@{ Force = $true })
+#### Ketarin
 
-## Pushing To Community Repository Via Commit Message
-
-You can force package update and push using git commit message. AppVeyor build is set up to pass arguments from the commit message to the `./update_all.ps1` script.
-
-If commit message includes `[AU <forced_packages>]` message on the first line, the `forced_packages` string will be sent to the updater.
-
-Examples:
-- `[AU pkg1 pkg2]`
-Force update ONLY packages `pkg1` and `pkg2`.
-- `[AU pkg1:ver1 pkg2 non_existent]`
-Force `pkg1` and use explicit version `ver1`, force `pkg2` and ignore `non_existent`.
-
-To see how versions behave when package update is forced see the [force documentation](https://github.com/majkinetor/au/blob/master/README.md#force-update).
-
-You can also push manual packages with command `[PUSH pkg1 ... pkgN]`. This works for any package anywhere in the file hierarchy and will not invoke AU updater at all.
-
-If there are no changes in the repository use `--allow-empty` git parameter:
-
-    git commit -m '[AU copyq less:2.0]' --allow-empty
-    git push
+* In `Settings -> Global variables` the variable `autoPackagesFolder` is used to determine where your automatic packages are. It doesn't matter what `chocopkgup` is using, this folder is passed through. Ensure this is set appropriately.
+* In `Settings -> Global variables` the variable `saveDir` is used to determine where to save the downloaded files from Ketarin. Please ensure the folder exists.
+* In `Settings -> Global variables` the variable `nopush` is set to `--nopush`, which allows checksum calculations to occur and then a custom script will push the files.
+* In `Settings -> Global variables` the variable `cscript` is set to `2`, which means calculate checksums, rebuild, and push the packages. If you set this to `1` it will do everything except push the packages. Setting this to `1` is how you disable package pushing.
+* In `Settings -> Global variables` the variable `checksum` is set to `{checksum}`. Do not change this, this is how the post update script replaces the literal value `{checksum}`. The same goes for `checksumx64`, `packageGuid`, and `url64`.
