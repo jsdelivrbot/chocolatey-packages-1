@@ -18,7 +18,7 @@ environment:
   au_version: master
   au_push: true
   # Use 1 to test all, or N to split testing into N groups
-  au_test_groups: 4
+  au_test_groups: 1
 
   # Github token to commit pushed packages to repository
   github_user_repo: nicholas-cecere/chocolatey-packages
@@ -26,7 +26,8 @@ environment:
     secure: 9axd63HWZlMI9wHHO3my8zyIjtm138aPHq81UFnT/OiPX/e4pZk1RwrCBnFK72z8
 
   # Mail credentials - for error notifications
-  mail_user: nicholas.cecere@gmail.com
+  mail_user:
+    secure: AYVh1DvJQ8TPkc4gvdKmbTU4tmN6CezrP8ENOg3NlOw=
   mail_pass:
     secure: HBPYEwPHjUOdm+ZzWJG/ew==
   mail_server: smtp.gmail.com
