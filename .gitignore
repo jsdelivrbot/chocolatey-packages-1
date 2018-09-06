@@ -9,10 +9,6 @@
 *.suo
 *.test
 *.work
-*.exe
-*.dll
-*.zip
-*.7z
 *.handover
 *.new
 *.exist
@@ -27,13 +23,6 @@ obj
 */working
 ketarin/soluto.xml
 *.stackdump
-/jobs.db
-*.log
-*.log.full
-automatic/_output/
-.vscode
-/Update-AUPackages.md
-/Update-History.md
-/Update-Force-Test*.md
-/update_vars.ps1
-/update_info.xml
+update_vars.ps1
+update_info.xml
+Update-AUPackages.md
