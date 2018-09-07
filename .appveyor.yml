@@ -51,6 +51,7 @@ init:
 
 install:
 - ps: |
+    $env:nupkg_cache_path = 'C:\NuGet'
     if (!(Test-Path "$env:nupkg_cache_path")) { mkdir -Force "$env:nupkg_cache_path" }
     @{
       'chocolatey' = $Env:choco_version
